@@ -405,8 +405,7 @@ return session;
     const key = r => [r.title, r.section, r.date, r.type].join('|');
     const remoteKeys = new Set(remote.map(key));
     const localOnly = records.filter(r => !remoteKeys.has(key(r)));
-
-    records.splice(0, records.length, ...remote, ...localOnly);
+records = [...remote, ...localOnly];
     renderRecords();
     updateStats();
   }
