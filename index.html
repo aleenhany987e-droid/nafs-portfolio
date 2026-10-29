@@ -280,8 +280,7 @@ function renderRecords(){
         `<a href="${a.data}" download="${esc(a.name)}" target="_blank" rel="noopener">📎 ${esc(a.name)}</a>`
       ).join('')}</div>
       ${r.status==='draft'?`<button class="btn gold" onclick="publishRecord(${r.id})">نشر</button>`:''}
-      <button class="btn light" onclick="deleteRecord(${r.id})">حذف</button>
-    </article>`).join(''):'<div class="empty">لا توجد سجلات مطابقة. يمكنك إضافة سجل جديد.</div>';
+${session ? `<button class="btn light" onclick="deleteRecord(${r.id})">حذف</button>` : ''}    </article>`).join(''):'<div class="empty">لا توجد سجلات مطابقة. يمكنك إضافة سجل جديد.</div>';
 }
 function publishRecord(id){
   const r=records.find(x=>x.id===id);if(!r)return;
