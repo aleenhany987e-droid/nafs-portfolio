@@ -4,7 +4,7 @@
 <head>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-const SUPABASE_URL = 'https://abtrcwverxpbuwurweiv.supabase.co';
+const SUPABASE_URL = 'https://abtcrwverxpbuwurweiv.supabase.co';
 const SUPABASE_KEY ='sb_publishable_ZyRaZAHYpJ8Go6D3xMY7dA_7ELfWsBq';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 </script>
@@ -66,7 +66,7 @@ footer{text-align:center;padding:25px;background:var(--navy);color:#e7d4af;margi
     <div>
       <h1>معيار التميز في نافس</h1>
       <p>منصة التميز التعليمي وقياس نواتج التعلم</p>
-      <p>نقيس الأثر… ونصنع التميز</p
+      <p>نقيس الأثر… ونصنع التميز</p>
 <p>المعلمة: أحلام عكور | </p>    </div>
   </div>
   <nav>
@@ -87,7 +87,6 @@ footer{text-align:center;padding:25px;background:var(--navy);color:#e7d4af;margi
       </div>
     </div>
 <button id="adminAddButton" hidden onclick="showPage('add')">+ إضافة إنجاز</button> <button id="adminLibraryButton" hidden onclick="showPage('library')">مكتبة الإنجاز</button>    <button id="adminLogoutButton" hidden class="btn" onclick="supabaseClient.auth.signOut().then(({error}) => error ? alert('تعذر تسجيل الخروج') : location.reload())">تسجيل الخروج</button>
-<button id="adminLogoutButton" hidden class="btn" onclick="supabaseClient.auth.signOut().then(({error}) => error ? alert('تعذر تسجيل الخروج') : location.reload())">تسجيل الخروج</button>
 </nav></header>
 
 <main>
@@ -263,10 +262,10 @@ function renderRecords(){
   const q=(document.getElementById('search').value||'').toLowerCase();
   const status=document.getElementById('statusFilter').value;
   const section=document.getElementById('sectionFilter').value;
-  const list=records.filter(r=>
+  const list=(Array.isArray(records)?records:[]).filter(r=>
     (status==='all'||r.status===status)&&
     (section==='all'||r.section===section)&&
-    (r.title+' '+r.details+' '+r.section).toLowerCase().includes(q)
+    ((r.title||'')+' '+(r.details||'')+' '+(r.section||'')).toLowerCase().includes(q)
   );
   document.getElementById('records').innerHTML=list.length?list.map(r=>`
     <article class="record">
@@ -276,11 +275,14 @@ function renderRecords(){
       <p><strong>القسم:</strong> ${esc(r.section)}</p>
       <p><strong>التاريخ:</strong> ${esc(r.date||'لم يحدد')}</p>
       <p>${esc(r.details||'لا توجد تفاصيل.')}</p>
-      <div class="attachments">${(r.attachments||[]).map((a,i)=>
-        `<a href="${a.data}" download="${esc(a.name)}" target="_blank" rel="noopener">📎 ${esc(a.name)}</a>`
+      <div class="attachments">${(r.attachments||[]).map(a=>
+        `<a href="${a.data||'#'}" download="${esc(a.name)}" target="_blank" rel="noopener">📎 ${esc(a.name)}</a>`
       ).join('')}</div>
-      ${r.status==='draft'?`<button class="btn gold" onclick="publishRecord(${r.id})">نشر</button>`:''}
-${window.isAdmin ? `<button class="btn light" onclick="deleteRecord(${r.id})">حذف</button>` : ''}}
+      ${r.status==='draft'&&window.isAdmin ? `<button class="btn gold" onclick="publishRecord(${JSON.stringify(r.id)})">نشر</button>`:''}
+      ${window.isAdmin ? `<button class="btn light" onclick="deleteRecord(${JSON.stringify(r.id)})">حذف</button>` : ''}
+    </article>
+  `).join(''):'<p class="empty">لا توجد سجلات.</p>';
+}
 function publishRecord(id){
   const r=records.find(x=>x.id===id);if(!r)return;
   r.status='published';if(persist()){renderRecords();updateStats()}
@@ -401,7 +403,7 @@ return session;
   }
     
 
-    const remote = await Promise.all(data.map(rowToRecord));
+    const remote = await Promise.all((Array.isArray(data) ? data : []).map(rowToRecord));
     const key = r => [r.title, r.section, r.date, r.type].join('|');
     const remoteKeys = new Set(remote.map(key));
     const localOnly = records.filter(r => !remoteKeys.has(key(r)));
