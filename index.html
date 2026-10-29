@@ -339,8 +339,7 @@ updateStats();
       return null;
     }
     session = data.session;
-    if (!session) panel.style.display = 'flex';
-    return session;
+if (!session) panel.style.display = 'none';    return session;
   }
 
   async function rowToRecord(row) {
