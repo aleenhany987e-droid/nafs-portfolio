@@ -86,20 +86,16 @@ footer{text-align:center;padding:25px;background:var(--navy);color:#e7d4af;margi
         <button onclick="chooseSection('التطوير المهني')">التطوير المهني</button>
       </div>
     </div>
-    <button onclick="showPage('add')">＋ إضافة إنجاز</button>
-    <button onclick="showPage('library')">مكتبة الإنجاز</button>
-    <button class="btn" onclick="supabaseClient.auth.signOut().then(({error}) => error ? alert('تعذر تسجيل الخروج') : location.reload())">تسجيل الخروج</button>
-  </nav>
-</header>
+<button id="adminAddButton" hidden onclick="showPage('add')">+ إضافة إنجاز</button> <button id="adminLibraryButton" hidden onclick="showPage('library')">مكتبة الإنجاز</button>    <button id="adminLogoutButton" hidden class="btn" onclick="supabaseClient.auth.signOut().then(({error}) => error ? alert('تعذر تسجيل الخروج') : location.reload())">تسجيل الخروج</button>
+<button id="adminLogoutButton" hidden class="btn" onclick="supabaseClient.auth.signOut().then(({error}) => error ? alert('تعذر تسجيل الخروج') : location.reload())">تسجيل الخروج</button>
+</nav></header>
 
 <main>
   <section id="home">
     <div class="hero">
       <h2>مرحبًا بك في معيار التميز في نافس</h2>
       <p>مساحة منظمة لتوثيق الاختبارات والشواهد والمبادرات والمشاريع والتقارير والاجتماعات، والاحتفاظ بسجل إنجازاتك التعليمية.</p>
-      <button class="btn gold" onclick="showPage('add')">＋ إضافة سجل جديد</button>
-      <button class="btn" onclick="showPage('library')">استعراض الإنجازات</button>
-    </div>
+<button id="adminAddHeroButton" hidden class="btn gold" onclick="showPage('add')">+ إضافة سجل جديد</button><button class="btn" onclick="showPage('library')">استعراض الإنجازات</button>    </div>
     <div class="stats">
       <div class="stat"><strong id="total">0</strong>إجمالي السجلات</div>
       <div class="stat"><strong id="drafts">0</strong>المسودات</div>
@@ -338,7 +334,17 @@ updateStats();
       alert('تعذر التحقق من تسجيل الدخول: ' + error.message);
       return null;
     }
-    session = data.session;
+    session = data.session;const adminButtonIds = [
+  'adminAddButton',
+  'adminLibraryButton',
+  'adminLogoutButton',
+  'adminAddHeroButton'
+];
+
+adminButtonIds.forEach(id => {
+  const button = document.getElementById(id);
+  if (button) button.hidden = !session;
+});
 if (!session) panel.style.display = 'none';    return session;
   }
 
