@@ -423,8 +423,11 @@ const { data, error } = await query.order('created_at', { ascending: false });
 
   window.saveRecord = async function(status) {
     const current = await getSession();
-    if (!current) return;
-
+if (!current) {
+  panel.style.display = 'flex';
+  message('يرجى تسجيل الدخول بحساب الإدارة لحفظ السجل.');
+  return;
+}
     const title = document.getElementById('title').value.trim();
     const type = document.getElementById('type').value || 'عام';
     const section = document.getElementById('section').value || '';
