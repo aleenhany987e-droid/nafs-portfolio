@@ -280,8 +280,7 @@ function renderRecords(){
         `<a href="${a.data}" download="${esc(a.name)}" target="_blank" rel="noopener">📎 ${esc(a.name)}</a>`
       ).join('')}</div>
       ${r.status==='draft'?`<button class="btn gold" onclick="publishRecord(${r.id})">نشر</button>`:''}
-${session ? `<button class="btn light" onclick="deleteRecord(${r.id})">حذف</button>` : ''}    </article>`).join(''):'<div class="empty">لا توجد سجلات مطابقة. يمكنك إضافة سجل جديد.</div>';
-}
+${window.isAdmin ? `<button class="btn light" onclick="deleteRecord(${r.id})">حذف</button>` : ''}}
 function publishRecord(id){
   const r=records.find(x=>x.id===id);if(!r)return;
   r.status='published';if(persist()){renderRecords();updateStats()}
@@ -299,8 +298,8 @@ updateStats();
 <script>
 (() => {
   const db = supabaseClient;
-  let session = null;
-
+let session = null;
+window.isAdmin = false;
   const panel = document.createElement('div');
   panel.style.cssText =
     'display:none;position:fixed;inset:0;z-index:99999;' +
@@ -333,7 +332,10 @@ updateStats();
       alert('تعذر التحقق من تسجيل الدخول: ' + error.message);
       return null;
     }
-    session = data.session;const adminButtonIds = [
+session = data.session;
+window.isAdmin = !!session;
+
+const adminButtonIds = [
   'adminAddButton',
   'adminLibraryButton',
   'adminLogoutButton',
@@ -344,7 +346,12 @@ adminButtonIds.forEach(id => {
   const button = document.getElementById(id);
   if (button) button.hidden = !session;
 });
-if (!session) panel.style.display = 'none';    return session;
+
+if (!session) {
+  panel.style.display = 'none';
+}
+
+return session;
   }
 
   async function rowToRecord(row) {
