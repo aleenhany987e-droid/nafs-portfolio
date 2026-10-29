@@ -383,21 +383,23 @@ return session;
     };
   }
 
-  async function loadCloudRecords() {
-    const current = await getSession();
-const isGuest = !current;
-   let query = db.from('platform_records').select('*');
-if (current) {
-  query = query.eq('owner_id', current.user.id);
-} else {
-  query = query.eq('status', 'published');
-}
-const { data, error } = await query.order('created_at', { ascending: false });
-    if (error) {
-      message('تعذر تحميل السجلات: ' + error.message);
-      panel.style.display = 'flex';
-      return;
-    }
+ async function loadCloudRecords() {
+  const current = await getSession();
+  let query = db.from('platform_records').select('*');
+
+  if (current) {
+    query = query.eq('owner_id', current.user.id);
+  } else {
+    query = query.eq('status', 'published');
+  }
+
+  const { data, error } = await query.order('created_at', { ascending: false });
+
+  if (error) {
+    message('تعذر تحميل السجلات: ' + error.message);
+    return;
+  }
+    
 
     const remote = await Promise.all(data.map(rowToRecord));
     const key = r => [r.title, r.section, r.date, r.type].join('|');
